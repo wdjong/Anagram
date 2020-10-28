@@ -1,0 +1,5 @@
+VS Open SQLite/SQL Server Compact Toolbox
+Add SQL CE4 Connection from solution
+FOR SDF
+USE Compact 4.0
+Right click on table to open query window
