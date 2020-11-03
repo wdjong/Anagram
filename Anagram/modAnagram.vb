@@ -2,29 +2,92 @@ Option Strict Off
 Option Explicit On
 
 Imports System.Data.SqlServerCe
+Imports System.Security.Cryptography
 Imports Microsoft.Office.Interop
 
 Module modAnagram
-    Dim aMSWord As Word.Application 'Microsoft Word
-    Dim currWord As String 'used in recursive recombine: current arrangement of letters
+    Public aMSWord As Word.Application 'Microsoft Word
     Public txtAnagramTextOnly As String 'Text is formatted in text box to suit game
-
+    Public lstHumanHeight As Integer
     ReadOnly aCombCmd As New SqlCeCommand
     'used in recursive recombine so that's why it's declared out here
     Public userBreak As Boolean 'CmdSearch during the searching says 'stop' and clicking on it interrupts the search
     Public Const aSearchButtonStr As String = "Search for words"
+    Dim currWord As String 'used in recursive recombine: current arrangement of letters
+    Dim solutionFound As Boolean = False
 
     Sub DoAnagram()
         'This is the beginning of the main search routine
         'Called from FrmAnagram CmdSearch.click event
         Try
             'tblCombination contains a record for each combination of all letters
-            DoStage1() 'find all combinations and put them into tblCombination
-            DoStage2() 'find words and put them into tblResult
+            'DoStage1() 'find all combinations and put them into tblCombination
+            'DoStage2() 'find words and put them into tblResult
+            ' CheckWordList()
+            CheckWordList()
         Catch ex As Exception
             MsgBox("doAnagram: " & ex.Message)
         End Try
     End Sub
+
+    Private Sub CheckWordList()
+        Dim letterPool As String
+        Dim aCmbiCmd As New SqlCeCommand 'for interating through combinations
+        Dim aCmbiDR As SqlCeDataReader 'for iterating through combinations
+        Dim aWord As String
+        Dim minLen As Integer
+        Dim maxLen As Integer
+        Dim mustContain As String = ""
+
+        letterPool = My.Forms.FrmAnagram.TxtAnagram.Text
+        If My.Forms.FrmAnagram.MnuToolsGen9.Checked Then
+            minLen = My.Settings.MinLen9
+            maxLen = 9
+            If My.Settings.MustContain9 > 0 Then
+                mustContain = letterPool.Substring(My.Settings.MustContain9 - 1, 1)
+            End If
+        ElseIf My.Forms.FrmAnagram.MnuToolsGen9.Checked Then
+            minLen = My.Settings.MinLen16
+            maxLen = 16
+        Else
+            minLen = 1
+            maxLen = letterPool.Length
+        End If
+        'for each word in word list
+        Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
+            aCmbiCmd.Connection = aConnection
+            aCmbiCmd.CommandType = CommandType.Text 'populate data reader
+            aConnection.Open()
+            aCmbiCmd.CommandText = "SELECT word FROM tblWord" 'source
+            aCmbiDR = aCmbiCmd.ExecuteReader
+            My.Forms.FrmAnagram.LstFound.Items.Clear()
+            My.Forms.FrmAnagram.LstHuman.Items.Clear()
+            While aCmbiDR.Read And Not userBreak
+                aWord = aCmbiDR("word")
+                'check if word meets basic constraints
+                If aWord.Length >= minLen And aWord.Length <= maxLen And (mustContain = "" Or aWord.Contains(mustContain)) Then
+                    If CheckLettersExist(letterPool, aWord) Then 'check if letters are present
+                        My.Forms.FrmAnagram.LstFound.Items.Add(aWord)
+                        My.Forms.FrmAnagram.LstFound.TopIndex = My.Forms.FrmAnagram.LstFound.Items.Count - 1
+                        My.Forms.FrmAnagram.StatusBar1.Text = My.Forms.FrmAnagram.LstFound.Items.Count & " words found... (vs " & My.Forms.FrmAnagram.LstHuman.Items.Count & ")"
+                    End If
+                End If
+            End While
+        End Using
+    End Sub
+
+    Public Function CheckLettersExist(ByVal letterPool As String, aWord As String) As Boolean
+        'Check all letters in aWord are available in letterPool        'teststring = mixed letters
+        CheckLettersExist = True
+        For Each letter As Char In aWord 'for each letter in word
+            If letterPool.Contains(letter) Then 'check for letter in teststring
+                letterPool = Replace(letterPool, letter, "", 1, 1) 'if present, remove from teststring
+            Else
+                CheckLettersExist = False
+                Exit Function
+            End If
+        Next 'if all present then word is possible
+    End Function
 
     Sub DoStage1()
         'Called from doAnagram
@@ -33,32 +96,38 @@ Module modAnagram
         Dim wordLen As Short 'length of word
 
         Try
-            My.Forms.FrmAnagram.StatusBar1.Text = "Stage 1... Find all combinations of letters"
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor
-            userBreak = False 'true if escape pressed
-            currWord = My.Forms.FrmAnagram.TxtAnagram.Text 'e.g. "tracehent"
-            wordLen = Len(currWord)
-            With My.Forms.FrmAnagram.ProgressBar1
-                .Visible = True
-                .Minimum = 0
-                .Maximum = Val(My.Forms.FrmAnagram.Permut1.Text)
-                .Value = 0
+            Cursor.Current = Cursors.WaitCursor
+            solutionFound = False 'for 9 letter word search
+            With My.Forms.FrmAnagram
+                userBreak = False 'true if escape pressed
+                .StatusBar1.Text = "Finding combinations"
+                .ProgressBar1.Visible = True
+                .ProgressBar1.Minimum = 0
+                .ProgressBar1.Maximum = Factorial(Len(.TxtAnagram.Text))
+                .ProgressBar1.Value = 0
+                .MnuToolsSearch.Checked = True
+                Application.DoEvents() 'check for a break
+
+                currWord = .TxtAnagram.Text 'e.g. "tracehent"
+                wordLen = Len(currWord)
+                EmptyDatabase()
+                Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
+                    aCombCmd.Connection = aConnection
+                    aCombCmd.CommandType = CommandType.Text 'sql update command see below
+                    aConnection.Open()
+                    For n = 1 To wordLen 'for each letter in the word
+                        currWord = ShiftRight(currWord) 'move the last letter to the beginning
+                        Recombine(wordLen - 1, wordLen) 'in which words are added to tblCombine
+                        If userBreak Then
+                            Exit For
+                        End If
+                    Next n
+                End Using
+                .ProgressBar1.Visible = False
+                .StatusBar1.Text = "Stage 1 complete"
+                Application.DoEvents() 'check for a break
             End With
-            My.Forms.FrmAnagram.LstFound.Items.Clear()
-            EmptyDatabase()
-            Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
-                aCombCmd.Connection = aConnection
-                aCombCmd.CommandType = CommandType.Text 'sql update command see below
-                aConnection.Open()
-                For n = 1 To wordLen 'for each letter in the word
-                    currWord = ShiftRight(currWord) 'move the last letter to the beginning
-                    Recombine(wordLen - 1, wordLen) 'in which words are added to tblCombine
-                    System.Windows.Forms.Application.DoEvents() 'check for a break
-                Next n
-            End Using
-            My.Forms.FrmAnagram.ProgressBar1.Visible = False
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default
-            My.Forms.FrmAnagram.StatusBar1.Text = "Stage 1 complete"
+            Cursor.Current = Cursors.Default
         Catch ex As Exception
             MsgBox("doStage1: " & ex.Message)
         End Try
@@ -66,9 +135,6 @@ Module modAnagram
 
     Sub Recombine(ByRef iLevel As Short, ByRef wordLen As Short)
         'Called from dostage1 and then recursively to get each combination of word
-        'currword "abc" recombine 2, 3 
-        'currword=a cb recombine 1, 3 addToDB "a cb"
-        'currword=a bc recombine 1, 3 addToDB "a bc"
         Dim n As Short 'change the right n letters
 
         Try
@@ -76,25 +142,27 @@ Module modAnagram
                 For n = 1 To iLevel 'for each of the iLevel rightmost letters
                     currWord = Left(currWord, wordLen - iLevel) & ShiftRight(Right(currWord, iLevel))
                     Recombine(iLevel - 1, wordLen)
-                    Application.DoEvents()
                 Next n
             Else 'iLevel = 1
-                My.Forms.FrmAnagram.ProgressBar1.Value = My.Forms.FrmAnagram.ProgressBar1.Value + 1
+                My.Forms.FrmAnagram.ProgressBar1.Value += 1
                 Dim SQL = "INSERT INTO tblCombination (combination) " _
                 & "        SELECT '" & currWord & "' " _
                 & "        WHERE NOT EXISTS (SELECT 1 FROM tblCombination WHERE combination = '" & currWord & "');"
                 aCombCmd.CommandText = SQL
-                'aCombCmd.CommandText = "INSERT INTO tblCombination ( combination ) VALUES('" & currWord & "');"
                 aCombCmd.ExecuteNonQuery() 'add it to the tblCombine table"
-                'Application.DoEvents()
-                'My.Forms.FrmAnagram.TxtAnagram.Text = currWord
+                'If Not solutionFound And wordLen = 9 Then 'Check straight away for Nine-letter word 'Slows it all down too much
+                '    If aMSWord.CheckSpelling(currWord) Then
+                '        solutionFound = True
+                '        If Not My.Forms.FrmAnagram.LstFound.Items.Contains(currWord) Then
+                '            My.Forms.FrmAnagram.LstFound.Items.Add(currWord) 'Add it to list but don't add to database yet
+                '            My.Forms.FrmAnagram.LstFound.TopIndex = My.Forms.FrmAnagram.LstFound.Items.Count - 1
+                '        End If
+                '    End If
+                'End If
+                Application.DoEvents() 'check for a break
             End If
         Catch ex As Exception
-            If ex.HResult <> -2147467259 Then 'ignore error relating to inserting duplicates
-                MsgBox("recombine: " & ex.Message)
-            Else
-                Debug.Print("Duplicate: ")
-            End If
+            MsgBox("recombine: " & ex.Message)
         End Try
     End Sub
 
@@ -116,35 +184,36 @@ Module modAnagram
         Dim aCmbiCmd As New SqlCeCommand 'for interating through combinations
         Dim aCmbiDR As SqlCeDataReader 'for iterating through combinations
         Try
-            My.Forms.FrmAnagram.StatusBar1.Text = "Stage 2: Checking list for words"
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor
-            aMSWord = CreateObject("Word.Application") 'use Word dictionary
-            wLen = Len(My.Forms.FrmAnagram.TxtAnagram.Text) 'the length of the original anagram string
-            My.Forms.FrmAnagram.ProgressBar1.Visible = True
-            My.Forms.FrmAnagram.ProgressBar1.Value = 0
-            My.Forms.FrmAnagram.ProgressBar1.Maximum = Val(My.Forms.FrmAnagram.Permut1.Text) 'approximately
-            prevWord = ""
-            Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
-                aCmbiCmd.Connection = aConnection
-                aCmbiCmd.CommandType = CommandType.Text 'populate data reader
-                aResuCmd.Connection = aConnection
-                aResuCmd.CommandType = CommandType.Text
-                aConnection.Open()
-                aCmbiCmd.CommandText = "SELECT combination FROM tblCombination order by combination" 'source
-                aCmbiDR = aCmbiCmd.ExecuteReader
-                While aCmbiDR.Read And Not userBreak
-                    thisWord = aCmbiDR("combination").ToString
-                    pDiff = StrCmp(thisWord, prevWord) 'determines where we start checking for words
-                    CheckForWords(thisWord, pDiff, wLen, aResuCmd)
-                    prevWord = thisWord
-                    My.Forms.FrmAnagram.ProgressBar1.Value = My.Forms.FrmAnagram.ProgressBar1.Value + 1
-                    System.Windows.Forms.Application.DoEvents()
-                End While
-            End Using
-            aMSWord = Nothing
-            My.Forms.FrmAnagram.StatusBar1.Text = "Stage 2: Complete"
-            My.Forms.FrmAnagram.ProgressBar1.Visible = False
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default 'mousepointer
+            With My.Forms.FrmAnagram
+                wLen = Len(My.Forms.FrmAnagram.TxtAnagram.Text) 'the length of the original anagram string
+                Cursor.Current = Cursors.WaitCursor
+                .StatusBar1.Text = .LstFound.Items.Count & " words found... (vs " & My.Forms.FrmAnagram.LstHuman.Items.Count & ")"
+                .LstFound.Items.Clear()
+                '.ProgressBar1.Visible = True
+                '.ProgressBar1.Value = 0
+                '.ProgressBar1.Maximum = Val(.Permut1.Text) 'approximately
+                Application.DoEvents() 'check for a break
+                prevWord = ""
+                Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
+                    aCmbiCmd.Connection = aConnection
+                    aCmbiCmd.CommandType = CommandType.Text 'populate data reader
+                    aResuCmd.Connection = aConnection
+                    aResuCmd.CommandType = CommandType.Text
+                    aConnection.Open()
+                    aCmbiCmd.CommandText = "SELECT combination FROM tblCombination order by combination" 'source
+                    aCmbiDR = aCmbiCmd.ExecuteReader
+                    While aCmbiDR.Read And Not userBreak
+                        thisWord = aCmbiDR("combination").ToString
+                        pDiff = StrCmp(thisWord, prevWord) 'determines where we start checking for words
+                        CheckForWords(thisWord, pDiff, wLen, aResuCmd)
+                        prevWord = thisWord
+                    End While
+                End Using
+                .StatusBar1.Text = .LstFound.Items.Count & " words found (finished) (vs " & My.Forms.FrmAnagram.LstHuman.Items.Count & ")"
+                '.ProgressBar1.Visible = False
+                Cursor.Current = Cursors.Default 'mousepointer
+            End With
+
         Catch ex As Exception
             MsgBox("doStage2: " & ex.Message)
         End Try
@@ -152,27 +221,43 @@ Module modAnagram
 
     Sub CheckForWords(ByRef aCombine As String, ByRef p As Short, ByVal wLen As Short, ByRef aResuCmd As SqlCeCommand)
         'Called from doStage2 (in which each record in tblCombination is iterated through
+        Dim letterPool As String
         Dim i As Short 'i is theh length of determining each of the possible words to be tested
         Dim w As String 'each possible Word
         Dim start As Short 'the shortest length of the string to check as a possible word
         Dim minLen As Short 'the minimum length of a word
-        'either the first point of difference from the previous combination 
-        'or the minimum length, which ever is greater
+        Dim mustContain As String = ""
+
+        letterPool = My.Forms.FrmAnagram.TxtAnagram.Text
+        If My.Forms.FrmAnagram.MnuToolsGen9.Checked Then
+            minLen = My.Settings.MinLen9
+            mustContain = letterPool.Substring(4)
+        ElseIf My.Forms.FrmAnagram.MnuToolsGen9.Checked Then
+            minLen = My.Settings.MinLen16
+        Else
+            minLen = 1
+        End If
 
         Try
-            minLen = Val(My.Forms.FrmAnagram.TxtMinLen.Text)
+            My.Forms.FrmAnagram.LstFound.Items.Clear()
+            minLen = My.Settings.MinLen9 'Val(My.Forms.FrmAnagram.TxtMinLen.Text)
             If p > minLen Then start = p Else start = minLen 'work out where to start looking
             For i = start To wLen 'look at possible words from the shortest not already checked to the longest possible
                 w = Left(aCombine, i) 'w is a possible word
-                If InStr(w, My.Forms.FrmAnagram.TxtLetter.Text) Then 'contains obligatory centreLetter
-                    My.Forms.FrmAnagram.TxtAnagram.Text = w 'display the combination being checked
+                If InStr(w, mustContain) Then 'contains obligatory centreLetter
+                    'My.Forms.FrmAnagram.TxtAnagram.Text = w 'display the combination being checked
                     If aMSWord.CheckSpelling(w) Then 'true means word thinks it's ok
-                        My.Forms.FrmAnagram.LstFound.Items.Add(w)
-                        My.Forms.FrmAnagram.LstFound.TopIndex = My.Forms.FrmAnagram.LstFound.Items.Count - 1
-                        aResuCmd.CommandText = "INSERT INTO tblResult ( result ) VALUES('" & w & "');"
-                        aResuCmd.ExecuteNonQuery() 'add it to the tblCombine table"
+                        If Not My.Forms.FrmAnagram.LstFound.Items.Contains(w) Then
+                            My.Forms.FrmAnagram.LstFound.Items.Add(w)
+                            My.Forms.FrmAnagram.LstFound.TopIndex = My.Forms.FrmAnagram.LstFound.Items.Count - 1
+                            My.Forms.FrmAnagram.StatusBar1.Text = My.Forms.FrmAnagram.LstFound.Items.Count & " words found... (vs " & My.Forms.FrmAnagram.LstHuman.Items.Count & ")"
+                            '.ProgressBar1.Value += 1
+                            aResuCmd.CommandText = "INSERT INTO tblResult ( result ) VALUES('" & w & "');" ' WHERE NOT EXISTS (SELECT result FROM tblResult WHERE result = '" & w & "');"
+                            aResuCmd.ExecuteNonQuery() 'add it to the tblCombine table"
+                        End If
                     End If
                 End If
+                Application.DoEvents() 'check for a break
             Next i
         Catch ex As Exception
             MsgBox("checkforWords: " & ex.Message)
@@ -242,41 +327,49 @@ Module modAnagram
     End Function
 
     Sub FindWordCombines(ByRef s As String)
-        'ADO.NET version
         'Try each combination of words to see if all letters can be used
         's (from TxtAnagram) are all the letters to rearrange
-        ' Assumes connectionString is a valid connection string.
-        Dim aResultCommand As New SqlCeCommand
-        Dim aResultDR As SqlCeDataReader
-        Dim aCombineCommand As New SqlCeCommand
-        Dim aResultWord As String
-        Dim s1 As String
+        Dim s1 As String = "" 'a pair of words
 
         Try
-            Using aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
-                aCombineCommand.Connection = aConnection
-                aCombineCommand.CommandType = CommandType.Text 'sql update command see below
-                aResultCommand.Connection = aConnection
-                aResultCommand.CommandText = "tblResult"
-                aResultCommand.CommandType = CommandType.TableDirect
-                aConnection.Open()
-                aResultDR = aResultCommand.ExecuteReader
-                Do While aResultDR.Read()
-                    aResultWord = aResultDR("Result").ToString
-                    s1 = FindWord(s, aResultWord) 'combine it with all others to find 2 words that use all letters
-                    If s1 <> "" Then 'if a combination of 2 words is found
-                        aCombineCommand.CommandText = "INSERT INTO tblCombine ( combine ) VALUES('" & s1 & "');"
-                        aCombineCommand.ExecuteNonQuery() 'add it to the tblCombine table"
-                        'System.Diagnostics.Debug.WriteLine(s1)
-                    End If
-                Loop
-            End Using
-
+            My.Forms.FrmAnagram.LstHuman.Items.Clear()
+            My.Forms.FrmAnagram.StatusBar1.Text = "Finding word combinations..."
+            Cursor.Current = Cursors.WaitCursor
+            FindWords(s, s1)
+            My.Forms.FrmAnagram.StatusBar1.Text = My.Forms.FrmAnagram.LstHuman.Items.Count & " combinations."
+            Cursor.Current = Cursors.Default
         Catch ex As Exception
             MsgBox("FindWordCombines: " & ex.Message)
         End Try
 
     End Sub
+
+    Private Function FindWords(ByRef s As String, ByVal s1 As String) As String
+        'Called by FindWordCombines
+        'Find another tblResult word that is not the same as s1
+        's is all the letters to rearrange (TxtAnagram)
+        's1 is a result word
+        Dim s2 As String
+        Dim sLen As Short
+
+        FindWords = ""
+        sLen = Len(s)
+        For Each word As String In My.Forms.FrmAnagram.LstFound.Items
+            s2 = s1 & " " & word 'join two result words
+            If Len(Replace(s2, " ", "")) = sLen Then 'see if we've used all the letters
+                If Anagram(Replace(s2, " ", ""), s) Then 'if we have check that the new combination is an anagram
+                    My.Forms.FrmAnagram.LstHuman.Items.Add(s2)
+                    My.Forms.FrmAnagram.LstHuman.TopIndex = My.Forms.FrmAnagram.LstHuman.Items.Count - 1
+                    My.Forms.FrmAnagram.StatusBar1.Text = My.Forms.FrmAnagram.LstHuman.Items.Count & " combinations found... "
+                    Application.DoEvents()
+                End If
+            ElseIf Len(s2) < sLen Then
+                FindWords = FindWords(s, s2)
+            Else
+                FindWords = ""
+            End If
+        Next
+    End Function
 
     Function FindWord(ByRef s As String, ByRef s1 As String) As String
         'Called by FindWordCombines
@@ -327,6 +420,7 @@ Module modAnagram
                 s = Left(s, p - 1) & Right(s, Len(s) - p) 'remove it
             Else 'if the letter not found then it's not an anagram.
                 Anagram = False
+                Exit Function
             End If
         Next i
     End Function
@@ -355,10 +449,39 @@ Module modAnagram
         Dim AppPath As String = System.AppDomain.CurrentDomain.BaseDirectory
         Dim text = IO.File.ReadAllText(AppPath + "nineletterwords.csv")
         Dim words = text.Split(vbCr) 'note: leaves vbLF at start of each line
-        Dim value As Integer = CInt(Int((words.Length * Rnd()) + 1))
+        Dim value As Integer = CInt(Int((words.Length * Rnd())))
         My.Forms.FrmAnagram.TxtAnagram.Text = MixUpWord(words(value))
-        My.Forms.FrmAnagram.TxtLetter.Text = My.Forms.FrmAnagram.TxtAnagram.Text.Substring(4, 1)
-        My.Forms.FrmAnagram.TxtMinLen.Text = 4
+    End Sub
+
+    Public Sub PopulateWordList()
+        Dim AppPath As String = System.AppDomain.CurrentDomain.BaseDirectory
+        Dim aConnection As New SqlCeConnection(My.Settings.AnagramConnectionString)
+        Dim SQL As String = ""
+        aCombCmd.Connection = aConnection
+        aCombCmd.CommandType = CommandType.Text 'sql update command see below
+        aConnection.Open()
+        aCombCmd.CommandText = "DROP TABLE tblWord;"
+        aCombCmd.ExecuteNonQuery()
+        aCombCmd.CommandText = "CREATE TABLE [tblWord] ([Id] int IDENTITY (1,1) Not NULL, [Word] nvarchar(50) Not NULL);"
+        aCombCmd.ExecuteNonQuery()
+        aCombCmd.CommandText = "ALTER TABLE [tblWord] ADD CONSTRAINT [PK_tblWord] PRIMARY KEY ([WORD])"
+        aCombCmd.ExecuteNonQuery()
+
+        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(AppPath + "wordlist.csv")
+            MyReader.TextFieldType = FileIO.FieldType.Delimited
+            MyReader.SetDelimiters(",")
+            Dim currentRow As String()
+            While Not MyReader.EndOfData
+                Try
+                    currentRow = MyReader.ReadFields()
+                    aCombCmd.CommandText = "INSERT INTO tblWord (word) VALUES ('" & currentRow(1) & "');"
+                    aCombCmd.ExecuteNonQuery()
+                Catch ex As Microsoft.VisualBasic.FileIO.MalformedLineException
+                    MsgBox("Line " & ex.Message & "is not valid and will be skipped.")
+                End Try
+            End While
+        End Using
+        aConnection.Close()
     End Sub
 
     Private Function MixUpWord(v As String) As String
@@ -376,7 +499,6 @@ Module modAnagram
                 v = v.Remove(a + 1, 1)
                 v = v.Insert(b, c)
                 v = v.Remove(b + 1, 1)
-                Debug.Print(v)
             End If
         Next
         MixUpWord = v

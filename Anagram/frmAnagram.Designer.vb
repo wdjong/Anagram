@@ -22,15 +22,14 @@ Partial Class FrmAnagram
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmAnagram))
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.StatusBar1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.Permut1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ProgressBar1 = New System.Windows.Forms.ToolStripProgressBar()
-        Me.Timer1 = New System.Windows.Forms.ToolStripProgressBar()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.TxtMinLen = New System.Windows.Forms.TextBox()
         Me.LstFound = New System.Windows.Forms.ListBox()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.MnuFile = New System.Windows.Forms.ToolStripMenuItem()
@@ -41,16 +40,17 @@ Partial Class FrmAnagram
         Me.MnuToolsGen9 = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuToolsGen16 = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuToolsOptions = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MnuToolsImport = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuHelp = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuHelpInstructions = New System.Windows.Forms.ToolStripMenuItem()
-        Me.TxtLetter = New System.Windows.Forms.TextBox()
-        Me.Label3 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.TxtNewWord = New System.Windows.Forms.TextBox()
         Me.LstHuman = New System.Windows.Forms.ListBox()
         Me.TxtAnagram = New System.Windows.Forms.TextBox()
         Me.TxtFormatted = New System.Windows.Forms.RichTextBox()
+        Me.TimeLimit = New System.Windows.Forms.Timer(Me.components)
+        Me.ProgressBar2 = New System.Windows.Forms.ProgressBar()
         Me.StatusStrip1.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
         Me.SuspendLayout()
@@ -58,35 +58,30 @@ Partial Class FrmAnagram
         'StatusStrip1
         '
         Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusBar1, Me.Permut1, Me.ProgressBar1, Me.Timer1})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 373)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusBar1, Me.Permut1, Me.ProgressBar1})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 403)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(411, 30)
+        Me.StatusStrip1.Size = New System.Drawing.Size(411, 22)
         Me.StatusStrip1.TabIndex = 0
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'StatusBar1
         '
         Me.StatusBar1.Name = "StatusBar1"
-        Me.StatusBar1.Size = New System.Drawing.Size(62, 25)
-        Me.StatusBar1.Text = "StatusBar1"
+        Me.StatusBar1.Size = New System.Drawing.Size(0, 17)
         '
         'Permut1
         '
         Me.Permut1.Name = "Permut1"
-        Me.Permut1.Size = New System.Drawing.Size(52, 25)
-        Me.Permut1.Text = "Permut1"
+        Me.Permut1.Size = New System.Drawing.Size(0, 25)
+        Me.Permut1.Visible = False
         '
         'ProgressBar1
         '
         Me.ProgressBar1.Name = "ProgressBar1"
         Me.ProgressBar1.Size = New System.Drawing.Size(100, 24)
-        '
-        'Timer1
-        '
-        Me.Timer1.Name = "Timer1"
-        Me.Timer1.Size = New System.Drawing.Size(100, 24)
-        Me.Timer1.ToolTipText = "Time remaining"
+        Me.ProgressBar1.ToolTipText = "Permutations"
+        Me.ProgressBar1.Visible = False
         '
         'Label1
         '
@@ -100,28 +95,11 @@ Partial Class FrmAnagram
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(12, 146)
+        Me.Label2.Location = New System.Drawing.Point(12, 87)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(68, 13)
         Me.Label2.TabIndex = 5
         Me.Label2.Text = "Words found"
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(105, 87)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(80, 13)
-        Me.Label4.TabIndex = 7
-        Me.Label4.Text = "Minimum length"
-        '
-        'TxtMinLen
-        '
-        Me.TxtMinLen.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
-        Me.TxtMinLen.Location = New System.Drawing.Point(124, 103)
-        Me.TxtMinLen.Name = "TxtMinLen"
-        Me.TxtMinLen.Size = New System.Drawing.Size(61, 21)
-        Me.TxtMinLen.TabIndex = 4
         '
         'LstFound
         '
@@ -129,9 +107,9 @@ Partial Class FrmAnagram
         Me.LstFound.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
         Me.LstFound.FormattingEnabled = True
         Me.LstFound.ItemHeight = 15
-        Me.LstFound.Location = New System.Drawing.Point(15, 162)
+        Me.LstFound.Location = New System.Drawing.Point(15, 103)
         Me.LstFound.Name = "LstFound"
-        Me.LstFound.Size = New System.Drawing.Size(173, 199)
+        Me.LstFound.Size = New System.Drawing.Size(173, 259)
         Me.LstFound.TabIndex = 14
         Me.LstFound.TabStop = False
         '
@@ -160,7 +138,7 @@ Partial Class FrmAnagram
         '
         'MnuTools
         '
-        Me.MnuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MnuToolsSearch, Me.MnuToolsCombine, Me.MnuToolsGen9, Me.MnuToolsGen16, Me.MnuToolsOptions})
+        Me.MnuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MnuToolsSearch, Me.MnuToolsCombine, Me.MnuToolsGen9, Me.MnuToolsGen16, Me.MnuToolsOptions, Me.MnuToolsImport})
         Me.MnuTools.Name = "MnuTools"
         Me.MnuTools.Size = New System.Drawing.Size(46, 20)
         Me.MnuTools.Text = "&Tools"
@@ -168,32 +146,38 @@ Partial Class FrmAnagram
         'MnuToolsSearch
         '
         Me.MnuToolsSearch.Name = "MnuToolsSearch"
-        Me.MnuToolsSearch.Size = New System.Drawing.Size(136, 22)
+        Me.MnuToolsSearch.Size = New System.Drawing.Size(180, 22)
         Me.MnuToolsSearch.Text = "&Search"
         '
         'MnuToolsCombine
         '
         Me.MnuToolsCombine.Name = "MnuToolsCombine"
-        Me.MnuToolsCombine.Size = New System.Drawing.Size(136, 22)
+        Me.MnuToolsCombine.Size = New System.Drawing.Size(180, 22)
         Me.MnuToolsCombine.Text = "&Combine"
         '
         'MnuToolsGen9
         '
         Me.MnuToolsGen9.Name = "MnuToolsGen9"
-        Me.MnuToolsGen9.Size = New System.Drawing.Size(136, 22)
+        Me.MnuToolsGen9.Size = New System.Drawing.Size(180, 22)
         Me.MnuToolsGen9.Text = "&Generate 9"
         '
         'MnuToolsGen16
         '
         Me.MnuToolsGen16.Name = "MnuToolsGen16"
-        Me.MnuToolsGen16.Size = New System.Drawing.Size(136, 22)
+        Me.MnuToolsGen16.Size = New System.Drawing.Size(180, 22)
         Me.MnuToolsGen16.Text = "Generate 16"
         '
         'MnuToolsOptions
         '
         Me.MnuToolsOptions.Name = "MnuToolsOptions"
-        Me.MnuToolsOptions.Size = New System.Drawing.Size(136, 22)
+        Me.MnuToolsOptions.Size = New System.Drawing.Size(180, 22)
         Me.MnuToolsOptions.Text = "&Options"
+        '
+        'MnuToolsImport
+        '
+        Me.MnuToolsImport.Name = "MnuToolsImport"
+        Me.MnuToolsImport.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsImport.Text = "Import"
         '
         'MnuHelp
         '
@@ -213,23 +197,6 @@ Partial Class FrmAnagram
         Me.MnuHelpInstructions.Name = "MnuHelpInstructions"
         Me.MnuHelpInstructions.Size = New System.Drawing.Size(136, 22)
         Me.MnuHelpInstructions.Text = "&Instructions"
-        '
-        'TxtLetter
-        '
-        Me.TxtLetter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
-        Me.TxtLetter.Location = New System.Drawing.Point(12, 103)
-        Me.TxtLetter.Name = "TxtLetter"
-        Me.TxtLetter.Size = New System.Drawing.Size(61, 21)
-        Me.TxtLetter.TabIndex = 3
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(12, 87)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(68, 13)
-        Me.Label3.TabIndex = 6
-        Me.Label3.Text = "Must contain"
         '
         'Label5
         '
@@ -267,35 +234,46 @@ Partial Class FrmAnagram
         Me.TxtAnagram.Name = "TxtAnagram"
         Me.TxtAnagram.Size = New System.Drawing.Size(173, 21)
         Me.TxtAnagram.TabIndex = 1
-        Me.TxtAnagram.Text = "ragasmany"
         '
         'TxtFormatted
         '
-        Me.TxtFormatted.Location = New System.Drawing.Point(232, 231)
+        Me.TxtFormatted.BackColor = System.Drawing.SystemColors.Control
+        Me.TxtFormatted.Location = New System.Drawing.Point(217, 211)
         Me.TxtFormatted.Name = "TxtFormatted"
-        Me.TxtFormatted.Size = New System.Drawing.Size(139, 130)
+        Me.TxtFormatted.Size = New System.Drawing.Size(169, 150)
         Me.TxtFormatted.TabIndex = 19
         Me.TxtFormatted.Text = ""
+        Me.TxtFormatted.Visible = False
+        '
+        'TimeLimit
+        '
+        Me.TimeLimit.Interval = 6000
+        '
+        'ProgressBar2
+        '
+        Me.ProgressBar2.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.ProgressBar2.Location = New System.Drawing.Point(0, 380)
+        Me.ProgressBar2.Name = "ProgressBar2"
+        Me.ProgressBar2.Size = New System.Drawing.Size(411, 23)
+        Me.ProgressBar2.TabIndex = 20
         '
         'FrmAnagram
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(411, 403)
+        Me.ClientSize = New System.Drawing.Size(411, 425)
+        Me.Controls.Add(Me.ProgressBar2)
         Me.Controls.Add(Me.TxtFormatted)
         Me.Controls.Add(Me.TxtAnagram)
         Me.Controls.Add(Me.LstHuman)
         Me.Controls.Add(Me.TxtNewWord)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.LstFound)
-        Me.Controls.Add(Me.TxtMinLen)
-        Me.Controls.Add(Me.TxtLetter)
-        Me.Controls.Add(Me.Label4)
-        Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.MenuStrip1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MainMenuStrip = Me.MenuStrip1
         Me.Name = "FrmAnagram"
         Me.Text = "Anagram"
@@ -310,8 +288,6 @@ Partial Class FrmAnagram
     Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents Label2 As System.Windows.Forms.Label
-    Friend WithEvents Label4 As System.Windows.Forms.Label
-    Friend WithEvents TxtMinLen As System.Windows.Forms.TextBox
     Friend WithEvents LstFound As System.Windows.Forms.ListBox
     Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
     Friend WithEvents MnuFile As System.Windows.Forms.ToolStripMenuItem
@@ -324,16 +300,16 @@ Partial Class FrmAnagram
     Friend WithEvents MnuTools As ToolStripMenuItem
     Friend WithEvents MnuToolsSearch As ToolStripMenuItem
     Friend WithEvents MnuToolsCombine As ToolStripMenuItem
-    Friend WithEvents Timer1 As ToolStripProgressBar
     Friend WithEvents MnuToolsGen9 As ToolStripMenuItem
     Friend WithEvents MnuToolsOptions As ToolStripMenuItem
     Friend WithEvents MnuHelpInstructions As ToolStripMenuItem
-    Friend WithEvents TxtLetter As TextBox
-    Friend WithEvents Label3 As Label
     Friend WithEvents Label5 As Label
     Friend WithEvents TxtNewWord As TextBox
     Friend WithEvents LstHuman As ListBox
     Friend WithEvents TxtAnagram As TextBox
     Friend WithEvents MnuToolsGen16 As ToolStripMenuItem
     Friend WithEvents TxtFormatted As RichTextBox
+    Friend WithEvents TimeLimit As Timer
+    Friend WithEvents ProgressBar2 As ProgressBar
+    Friend WithEvents MnuToolsImport As ToolStripMenuItem
 End Class

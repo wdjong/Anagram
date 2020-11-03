@@ -8,17 +8,17 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Anagram")> 
-<Assembly: AssemblyDescription("")> 
-<Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("Anagram")> 
-<Assembly: AssemblyCopyright("Copyright ©  2015")> 
+<Assembly: AssemblyTitle("Anagram")>
+<Assembly: AssemblyDescription("Fun with mixing up letters")>
+<Assembly: AssemblyCompany("Walter de Jong")>
+<Assembly: AssemblyProduct("Anagram")>
+<Assembly: AssemblyCopyright("Copyright ©  2001")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("02c0ae1b-c095-4576-b81c-65eb3ce4d92e")> 
+<Assembly: Guid("02c0ae1b-c095-4576-b81c-65eb3ce4d92e")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: AssemblyVersion("2.0.11.*")>
+<Assembly: AssemblyFileVersion("2.0.11.0")>
