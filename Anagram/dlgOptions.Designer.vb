@@ -23,7 +23,6 @@ Partial Class DlgOptions
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DlgOptions))
-        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.OK_Button = New System.Windows.Forms.Button()
         Me.Cancel_Button = New System.Windows.Forms.Button()
         Me.TxtMinLen9 = New System.Windows.Forms.TextBox()
@@ -36,23 +35,9 @@ Partial Class DlgOptions
         Me.LblSixteenLetter = New System.Windows.Forms.Label()
         Me.TxtMinLen16 = New System.Windows.Forms.TextBox()
         Me.LblMinLen16 = New System.Windows.Forms.Label()
+        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'TableLayoutPanel1
-        '
-        Me.TableLayoutPanel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TableLayoutPanel1.ColumnCount = 2
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(277, 274)
-        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-        Me.TableLayoutPanel1.RowCount = 1
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(146, 29)
-        Me.TableLayoutPanel1.TabIndex = 0
         '
         'OK_Button
         '
@@ -76,7 +61,7 @@ Partial Class DlgOptions
         'TxtMinLen9
         '
         Me.TxtMinLen9.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
-        Me.TxtMinLen9.Location = New System.Drawing.Point(110, 148)
+        Me.TxtMinLen9.Location = New System.Drawing.Point(131, 73)
         Me.TxtMinLen9.Name = "TxtMinLen9"
         Me.TxtMinLen9.Size = New System.Drawing.Size(100, 21)
         Me.TxtMinLen9.TabIndex = 8
@@ -84,7 +69,7 @@ Partial Class DlgOptions
         'LblMinLen9
         '
         Me.LblMinLen9.AutoSize = True
-        Me.LblMinLen9.Location = New System.Drawing.Point(12, 148)
+        Me.LblMinLen9.Location = New System.Drawing.Point(12, 73)
         Me.LblMinLen9.Name = "LblMinLen9"
         Me.LblMinLen9.Size = New System.Drawing.Size(80, 13)
         Me.LblMinLen9.TabIndex = 9
@@ -93,7 +78,7 @@ Partial Class DlgOptions
         'LblNineLetter
         '
         Me.LblNineLetter.AutoSize = True
-        Me.LblNineLetter.Location = New System.Drawing.Point(12, 95)
+        Me.LblNineLetter.Location = New System.Drawing.Point(12, 20)
         Me.LblNineLetter.Name = "LblNineLetter"
         Me.LblNineLetter.Size = New System.Drawing.Size(84, 13)
         Me.LblNineLetter.TabIndex = 10
@@ -101,7 +86,7 @@ Partial Class DlgOptions
         '
         'TxtTimeLimit9
         '
-        Me.TxtTimeLimit9.Location = New System.Drawing.Point(110, 122)
+        Me.TxtTimeLimit9.Location = New System.Drawing.Point(131, 47)
         Me.TxtTimeLimit9.Name = "TxtTimeLimit9"
         Me.TxtTimeLimit9.Size = New System.Drawing.Size(100, 20)
         Me.TxtTimeLimit9.TabIndex = 11
@@ -109,24 +94,24 @@ Partial Class DlgOptions
         'LblTimeLimit9
         '
         Me.LblTimeLimit9.AutoSize = True
-        Me.LblTimeLimit9.Location = New System.Drawing.Point(12, 122)
+        Me.LblTimeLimit9.Location = New System.Drawing.Point(12, 47)
         Me.LblTimeLimit9.Name = "LblTimeLimit9"
-        Me.LblTimeLimit9.Size = New System.Drawing.Size(50, 13)
+        Me.LblTimeLimit9.Size = New System.Drawing.Size(81, 13)
         Me.LblTimeLimit9.TabIndex = 12
-        Me.LblTimeLimit9.Text = "Time limit"
+        Me.LblTimeLimit9.Text = "Time limit (secs)"
         '
         'LblTimeLimit16
         '
         Me.LblTimeLimit16.AutoSize = True
-        Me.LblTimeLimit16.Location = New System.Drawing.Point(12, 209)
+        Me.LblTimeLimit16.Location = New System.Drawing.Point(12, 146)
         Me.LblTimeLimit16.Name = "LblTimeLimit16"
-        Me.LblTimeLimit16.Size = New System.Drawing.Size(50, 13)
+        Me.LblTimeLimit16.Size = New System.Drawing.Size(81, 13)
         Me.LblTimeLimit16.TabIndex = 17
-        Me.LblTimeLimit16.Text = "Time limit"
+        Me.LblTimeLimit16.Text = "Time limit (secs)"
         '
         'TxtTimeLimit16
         '
-        Me.TxtTimeLimit16.Location = New System.Drawing.Point(110, 209)
+        Me.TxtTimeLimit16.Location = New System.Drawing.Point(131, 146)
         Me.TxtTimeLimit16.Name = "TxtTimeLimit16"
         Me.TxtTimeLimit16.Size = New System.Drawing.Size(100, 20)
         Me.TxtTimeLimit16.TabIndex = 16
@@ -134,7 +119,7 @@ Partial Class DlgOptions
         'LblSixteenLetter
         '
         Me.LblSixteenLetter.AutoSize = True
-        Me.LblSixteenLetter.Location = New System.Drawing.Point(12, 182)
+        Me.LblSixteenLetter.Location = New System.Drawing.Point(12, 119)
         Me.LblSixteenLetter.Name = "LblSixteenLetter"
         Me.LblSixteenLetter.Size = New System.Drawing.Size(97, 13)
         Me.LblSixteenLetter.TabIndex = 15
@@ -143,7 +128,7 @@ Partial Class DlgOptions
         'TxtMinLen16
         '
         Me.TxtMinLen16.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
-        Me.TxtMinLen16.Location = New System.Drawing.Point(110, 235)
+        Me.TxtMinLen16.Location = New System.Drawing.Point(131, 172)
         Me.TxtMinLen16.Name = "TxtMinLen16"
         Me.TxtMinLen16.Size = New System.Drawing.Size(100, 21)
         Me.TxtMinLen16.TabIndex = 13
@@ -151,11 +136,26 @@ Partial Class DlgOptions
         'LblMinLen16
         '
         Me.LblMinLen16.AutoSize = True
-        Me.LblMinLen16.Location = New System.Drawing.Point(12, 235)
+        Me.LblMinLen16.Location = New System.Drawing.Point(12, 172)
         Me.LblMinLen16.Name = "LblMinLen16"
         Me.LblMinLen16.Size = New System.Drawing.Size(80, 13)
         Me.LblMinLen16.TabIndex = 14
         Me.LblMinLen16.Text = "Minimum length"
+        '
+        'TableLayoutPanel1
+        '
+        Me.TableLayoutPanel1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.TableLayoutPanel1.ColumnCount = 2
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
+        Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(110, 229)
+        Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
+        Me.TableLayoutPanel1.RowCount = 1
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(146, 29)
+        Me.TableLayoutPanel1.TabIndex = 0
         '
         'DlgOptions
         '
@@ -163,7 +163,7 @@ Partial Class DlgOptions
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel_Button
-        Me.ClientSize = New System.Drawing.Size(435, 315)
+        Me.ClientSize = New System.Drawing.Size(268, 270)
         Me.Controls.Add(Me.LblTimeLimit16)
         Me.Controls.Add(Me.TxtTimeLimit16)
         Me.Controls.Add(Me.LblSixteenLetter)
@@ -188,7 +188,6 @@ Partial Class DlgOptions
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents OK_Button As System.Windows.Forms.Button
     Friend WithEvents Cancel_Button As System.Windows.Forms.Button
     Friend WithEvents TxtMinLen9 As TextBox
@@ -201,4 +200,5 @@ Partial Class DlgOptions
     Friend WithEvents LblSixteenLetter As Label
     Friend WithEvents TxtMinLen16 As TextBox
     Friend WithEvents LblMinLen16 As Label
+    Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
 End Class

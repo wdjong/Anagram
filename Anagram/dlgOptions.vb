@@ -16,4 +16,11 @@ Public Class DlgOptions
         Me.Close()
     End Sub
 
+    Private Sub DlgOptions_Load(sender As Object, e As EventArgs) Handles Me.Load
+        TxtMinLen9.Text = My.Settings.MinLen9.ToString
+        TxtTimeLimit9.Text = My.Settings.TimeLimit9.ToString
+        TxtMinLen16.Text = My.Settings.MinLen16.ToString
+        TxtTimeLimit16.Text = My.Settings.TimeLimit16.ToString
+    End Sub
+
 End Class

@@ -102,7 +102,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("60")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("180")>  _
         Public Property TimeLimit16() As Integer
             Get
                 Return CType(Me("TimeLimit16"),Integer)

@@ -33,7 +33,7 @@ Partial Class FrmAnagram
         Me.LstFound = New System.Windows.Forms.ListBox()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.MnuFile = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MnuFileExit = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuTools = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuToolsSearch = New System.Windows.Forms.ToolStripMenuItem()
         Me.MnuToolsCombine = New System.Windows.Forms.ToolStripMenuItem()
@@ -47,12 +47,15 @@ Partial Class FrmAnagram
         Me.Label5 = New System.Windows.Forms.Label()
         Me.TxtNewWord = New System.Windows.Forms.TextBox()
         Me.LstHuman = New System.Windows.Forms.ListBox()
+        Me.CmListbox = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CmTsMenuCopy = New System.Windows.Forms.ToolStripMenuItem()
         Me.TxtAnagram = New System.Windows.Forms.TextBox()
         Me.TxtFormatted = New System.Windows.Forms.RichTextBox()
         Me.TimeLimit = New System.Windows.Forms.Timer(Me.components)
         Me.ProgressBar2 = New System.Windows.Forms.ProgressBar()
         Me.StatusStrip1.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
+        Me.CmListbox.SuspendLayout()
         Me.SuspendLayout()
         '
         'StatusStrip1
@@ -125,16 +128,16 @@ Partial Class FrmAnagram
         '
         'MnuFile
         '
-        Me.MnuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ExitToolStripMenuItem})
+        Me.MnuFile.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MnuFileExit})
         Me.MnuFile.Name = "MnuFile"
         Me.MnuFile.Size = New System.Drawing.Size(37, 20)
         Me.MnuFile.Text = "&File"
         '
-        'ExitToolStripMenuItem
+        'MnuFileExit
         '
-        Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(93, 22)
-        Me.ExitToolStripMenuItem.Text = "E&xit"
+        Me.MnuFileExit.Name = "MnuFileExit"
+        Me.MnuFileExit.Size = New System.Drawing.Size(93, 22)
+        Me.MnuFileExit.Text = "E&xit"
         '
         'MnuTools
         '
@@ -146,37 +149,37 @@ Partial Class FrmAnagram
         'MnuToolsSearch
         '
         Me.MnuToolsSearch.Name = "MnuToolsSearch"
-        Me.MnuToolsSearch.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsSearch.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsSearch.Text = "&Search"
         '
         'MnuToolsCombine
         '
         Me.MnuToolsCombine.Name = "MnuToolsCombine"
-        Me.MnuToolsCombine.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsCombine.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsCombine.Text = "&Combine"
         '
         'MnuToolsGen9
         '
         Me.MnuToolsGen9.Name = "MnuToolsGen9"
-        Me.MnuToolsGen9.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsGen9.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsGen9.Text = "&Generate 9"
         '
         'MnuToolsGen16
         '
         Me.MnuToolsGen16.Name = "MnuToolsGen16"
-        Me.MnuToolsGen16.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsGen16.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsGen16.Text = "Generate 16"
         '
         'MnuToolsOptions
         '
         Me.MnuToolsOptions.Name = "MnuToolsOptions"
-        Me.MnuToolsOptions.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsOptions.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsOptions.Text = "&Options"
         '
         'MnuToolsImport
         '
         Me.MnuToolsImport.Name = "MnuToolsImport"
-        Me.MnuToolsImport.Size = New System.Drawing.Size(180, 22)
+        Me.MnuToolsImport.Size = New System.Drawing.Size(136, 22)
         Me.MnuToolsImport.Text = "Import"
         '
         'MnuHelp
@@ -218,6 +221,7 @@ Partial Class FrmAnagram
         'LstHuman
         '
         Me.LstHuman.BackColor = System.Drawing.SystemColors.Control
+        Me.LstHuman.ContextMenuStrip = Me.CmListbox
         Me.LstHuman.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!)
         Me.LstHuman.FormattingEnabled = True
         Me.LstHuman.ItemHeight = 15
@@ -226,6 +230,18 @@ Partial Class FrmAnagram
         Me.LstHuman.Size = New System.Drawing.Size(169, 274)
         Me.LstHuman.TabIndex = 18
         Me.LstHuman.TabStop = False
+        '
+        'CmListbox
+        '
+        Me.CmListbox.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CmTsMenuCopy})
+        Me.CmListbox.Name = "CmListbox"
+        Me.CmListbox.Size = New System.Drawing.Size(103, 26)
+        '
+        'CmTsMenuCopy
+        '
+        Me.CmTsMenuCopy.Name = "CmTsMenuCopy"
+        Me.CmTsMenuCopy.Size = New System.Drawing.Size(102, 22)
+        Me.CmTsMenuCopy.Text = "Copy"
         '
         'TxtAnagram
         '
@@ -238,8 +254,10 @@ Partial Class FrmAnagram
         'TxtFormatted
         '
         Me.TxtFormatted.BackColor = System.Drawing.SystemColors.Control
+        Me.TxtFormatted.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.TxtFormatted.Location = New System.Drawing.Point(217, 211)
         Me.TxtFormatted.Name = "TxtFormatted"
+        Me.TxtFormatted.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None
         Me.TxtFormatted.Size = New System.Drawing.Size(169, 150)
         Me.TxtFormatted.TabIndex = 19
         Me.TxtFormatted.Text = ""
@@ -281,6 +299,7 @@ Partial Class FrmAnagram
         Me.StatusStrip1.PerformLayout()
         Me.MenuStrip1.ResumeLayout(False)
         Me.MenuStrip1.PerformLayout()
+        Me.CmListbox.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -291,7 +310,7 @@ Partial Class FrmAnagram
     Friend WithEvents LstFound As System.Windows.Forms.ListBox
     Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
     Friend WithEvents MnuFile As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ExitToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MnuFileExit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents MnuHelp As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents MnuHelpAbout As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents StatusBar1 As System.Windows.Forms.ToolStripStatusLabel
@@ -312,4 +331,6 @@ Partial Class FrmAnagram
     Friend WithEvents TimeLimit As Timer
     Friend WithEvents ProgressBar2 As ProgressBar
     Friend WithEvents MnuToolsImport As ToolStripMenuItem
+    Friend WithEvents CmListbox As ContextMenuStrip
+    Friend WithEvents CmTsMenuCopy As ToolStripMenuItem
 End Class

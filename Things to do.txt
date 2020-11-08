@@ -1,0 +1,8 @@
+smaller square for 16 letters or bigger font
+word checking for human to include adjacency
+populate option values on options form load 
+	add time units secs?
+	(fix appearance)
+
+check why fat not found
+sjeojfmqhhbthtaf

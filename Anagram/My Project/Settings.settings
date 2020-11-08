@@ -20,7 +20,7 @@
       <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="TimeLimit16" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">60</Value>
+      <Value Profile="(Default)">180</Value>
     </Setting>
     <Setting Name="MustContain9" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
